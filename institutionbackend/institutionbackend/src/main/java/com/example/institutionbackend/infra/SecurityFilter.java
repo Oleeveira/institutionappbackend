@@ -1,7 +1,7 @@
 package com.example.institutionbackend.infra;
 
-import com.example.institutionbackend.models.InstitutionModel;
-import com.example.institutionbackend.repositories.InstitutionRepository;
+import com.example.institutionbackend.models.User;
+import com.example.institutionbackend.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     TokenService tokenService;
     @Autowired
-    InstitutionRepository institutionRepository;
+    UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,7 +29,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         var login = tokenService.validateToken(token);
 
         if(login != null){
-            InstitutionModel user = institutionRepository.findByEmail(login).orElseThrow(() -> new RuntimeException());
+            User user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException());
             var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
             var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
